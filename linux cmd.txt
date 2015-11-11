@@ -1,0 +1,323 @@
+﻿
+
+=======================================软件的卸载==========================================
+
+
+1.软件的卸载主要是使用rpm来进行的。卸载软件首先要知道软件包在系统中注册的名称。键入命令：
+
+#rpm -q -a
+
+即可查询到当前系统中安装的所有的软件包。
+
+2. 确定了要卸载的软件的名称，就可以开始实际卸载该软件了。键入命令：
+
+#rpm -e [package name]
+
+即可卸载软件。参数e的作用是使rpm进入卸载模式。对名为[package name]的软件包进行卸载。由于系统中各个软件包之间相互有依赖关系。如果因存在依赖关系而不能卸载，rpm将给予提示并停止卸载。你可以使用如下的命令来忽略依赖关系，直接开始卸载：
+
+#rpm -e [package name] -nodeps
+
+忽略依赖关系的卸载可能会导致系统中其它的一些软件无法使用
+
+如果想知道rpm包安装到哪里了呢？
+
+应该用 #rpm -ql [package name]
+=======================================软件的卸载end==========================================
+
+
+make PREFIX=/usr/local/redis install #安装到指定目录中
+配置文件在/etc/redis下
+kill -9 [PID]  杀死进程
+
+
+=======================================让yum下载而修改代理==========================================
+如果只是暂时使用代理,在命令行输入下面一条命令:
+export http_proxy="http://10.16.46.161:3333"
+
+对于长久使用代理的情况:
+yum里面可以单独设置代理
+就是yum源的参数加proxy=“http://ip：PORT”
+即在/etc/yum.conf中加入下面几句.
+proxy=http://210.45.72.XX:808
+proxy_username=username
+proxy_password=password
+另外: 
+/root/.bashrc中加入: 
+export http_proxy="http://username:password@210.45.72.XX:808"
+如果是通过ip或电脑的网卡地址认证,可忽略所有username 和 password .
+注:停止使用代理的时候,要把改过的文件改成原样.尤其是如果使用了export http_proxy="http://210.45.72.XX:808"命令,
+要在命令行输入: unset http_proxy ,去除环境变量.
+因为export http_proxy="http://210.45.72.XX:808"这条命令的实质是把export后面的设置写进环境设置文件中.
+输入env 可以看所有的环境变量设置.
+env >env.txt 可以把环境变量输出到env.txt中,然后打开看也可以.
+unset 变量 可以取消曾经设过的环境变量.
+=======================================修改代理end==========================================
+
+
+=======================================防火墙文件修改==========================================
+-A RH-Firewall-1-INPUT -m state --state NEW -m tcp -p tcp --dport 3306 -j ACCEPT
+
+
+LINUX关闭防火墙、开放特定端口等常用操作
+
+（1） 重启后永久性生效：
+
+开启：chkconfig iptables on
+
+关闭：chkconfig iptables off
+
+（2） 即时生效，重启后失效：
+
+开启：service iptables start
+
+关闭：service iptables stop
+
+（3）Linux 防火墙开放特定端口
+
+iptables是linux下的防火墙，同时也是服务名称。
+
+service iptables status 查看防火墙状态
+service iptables start 开启防火墙
+service iptables stop 关闭防火墙
+service iptables restart 重启防火墙
+防火墙开放特定端口：
+①文件/etc/sysconfig/iptables
+②添加：
+-A RH-Firewall-1-INPUT -m state –state NEW -m tcp -p tcp –dport 3306 -j ACCEPT
+★具体参照/etc/sysconfig/iptables中的配置，一般默认会有一个22端口开放★
+★数字3306代表开放3306端口，也可以改成其他的端口.★
+③重启防火墙
+service iptables restart
+
+保存对防火墙的设置
+serivce iptables save
+=======================================防火墙文件修改end==========================================
+
+=======================================开机自动启动redis脚本==========================================
+修改redis.conf，打开后台运行选项：
+# By default Redis does not run as a daemon. Use 'yes' if you need it.
+# Note that Redis will write a pid file in /var/run/redis.pid when daemonized.
+daemonize yes
+
+编写脚本，vim /etc/init.d/redis:
+
+# chkconfig: 2345 10 90
+# description: Start and Stop redis
+ 
+PATH=/usr/local/bin:/sbin:/usr/bin:/bin
+ 
+REDISPORT=6379 #实际环境而定
+EXEC=/usr/local/redis/src/redis-server #实际环境而定
+REDIS_CLI=/usr/local/redis/src/redis-cli #实际环境而定
+ 
+PIDFILE=/var/run/redis.pid
+CONF="/usr/local/redis/redis.conf" #实际环境而定
+ 
+case "$1" in
+        start)
+                if [ -f $PIDFILE ]
+                then
+                        echo "$PIDFILE exists, process is already running or crashed."
+                else
+                        echo "Starting Redis server..."
+                        $EXEC $CONF
+                fi
+                if [ "$?"="0" ]
+                then
+                        echo "Redis is running..."
+                fi
+                ;;
+        stop)
+                if [ ! -f $PIDFILE ]
+                then
+                        echo "$PIDFILE exists, process is not running."
+                else
+                        PID=$(cat $PIDFILE)
+                        echo "Stopping..."
+                        $REDIS_CLI -p $REDISPORT SHUTDOWN
+                        while [ -x $PIDFILE ]
+                        do
+                                echo "Waiting for Red#is to shutdown..."
+                                sleep 1
+                        done
+                        echo "Redis stopped"
+                fi
+                ;;
+        restart|force-reload)
+                ${0} stop
+                ${0} start
+                ;;
+        *)
+                echo "Usage: /etc/init.d/redis {start|stop|restart|force-reload}" >&2
+                exit 1
+esac
+
+执行权限：
+chmod +x /etc/init.d/redis
+
+开机自启动：
+# 尝试启动或停止redis
+service redis start
+service redis stop
+ 
+# 开启服务自启动
+chkconfig redis on
+收工.
+=======================================开机自动启动redis脚本end=======================================
+
+
+=======================================ruby配置====================================================
+ yum -y install ruby ruby-devel rubygems rpm-build    //网上不明觉厉，都是这么安装的，就跟着这样玩吧
+
+再用 gem 这个命令来安装 redis接口    gem貌似是ruby的一个工具包  反正没错就是了。
+
+
+
+=======================================ruby配置end====================================================
+
+
+=======================================redis集群配置====================================================
+gem install redis    //等一会儿就好了
+
+上面的步骤完事了，接下来运行一下src目录下的redis-trib.rb
+
+ /home/redis/redis3.0.5/src/redis-trib.rb
+
+//redis.conf
+cluster-config-file redis-node-7000.conf   //这个配置文件名保证不一样 不然不能多开redis服务
+
+遇到问题Either the node already knows other nodes (check with CLUSTER NODES) or contains some key in database 0
+进入相应的数据库 flushall一下
+
+在src目录下运行进行集群配置
+#redis-trib.rb的create子命令构建  
+#--replicas 则指定了为Redis Cluster中的每个Master节点配备几个Slave节点  
+#节点角色由顺序决定,先master之后是slave（前3个主，后3个从）
+ ./redis-trib.rb create --replicas 1 10.16.61.107:6379 10.16.61.93:6379 10.16.61.96:6379 10.16.61.107:7020 10.16.61.93:7020 10.16.61.96:7020
+
+
+ 如果需要全部重新自动配置,则删除所有的配置好的cluster-config-file,重新启动所有的redis-server,然后重新执行配置命令即可
+
+二，添加节点
+新配置二个测试节点
+查看复制打印?
+# cd /etc/redis  
+  
+//新增配置  
+# cp redis-6379.conf redis-6378.conf && sed -i "s/6379/6378/g" redis-6378.conf  
+# cp redis-6382.conf redis-6385.conf && sed -i "s/6382/6385/g" redis-6385.conf  
+  
+//启动  
+# redis-server /etc/redis/redis-6385.conf > /var/log/redis/redis-6385.log 2>&1 &  
+# redis-server /etc/redis/redis-6378.conf > /var/log/redis/redis-6378.log 2>&1 &  
+
+添加主节点
+# redis-trib.rb add-node 192.168.10.219:6378 192.168.10.219:6379  
+注释：
+192.168.10.219:6378是新增的节点
+192.168.10.219:6379集群任一个旧节点
+
+添加新的slave节点
+# redis-trib.rb add-node --slave --master-id 03ccad2ba5dd1e062464bc7590400441fafb63f2 192.168.10.220:6385 192.168.10.219:6379  
+注释：
+--slave，表示添加的是从节点
+--master-id 03ccad2ba5dd1e062464bc7590400441fafb63f2,主节点的node id，在这里是前面新添加的6378的node id
+192.168.10.220:6385,新节点
+192.168.10.219:6379集群任一个旧节点
+
+重新分配slot
+查看复制打印?
+# redis-trib.rb reshard 192.168.10.219:6378 //下面是主要过程  
+  
+How many slots do you want to move (from 1 to 16384)? 1000 //设置slot数1000  
+What is the receiving node ID? 03ccad2ba5dd1e062464bc7590400441fafb63f2 //新节点node id  
+Please enter all the source node IDs.  
+ Type 'all' to use all the nodes as source nodes for the hash slots.  
+ Type 'done' once you entered all the source nodes IDs.  
+Source node #1:all //表示全部节点重新洗牌  
+Do you want to proceed with the proposed reshard plan (yes/no)? yes //确认重新分  
+新增加的主节点，是没有slots的，
+
+删除一个slave节点
+#redis-trib del-node ip:port '<node-id>'  
+
+删除主节点
+如果主节点有从节点，将从节点转移到其他主节点
+如果主节点有slot，去掉分配的slot，然后在删除主节点
+查看复制打印?
+# redis-trib.rb reshard 192.168.10.219:6378 //取消分配的slot,下面是主要过程  
+  
+How many slots do you want to move (from 1 to 16384)? 1000 //被删除master的所有slot数量  
+What is the receiving node ID? 5d8ef5a7fbd72ac586bef04fa6de8a88c0671052 //接收6378节点slot的master  
+Please enter all the source node IDs.  
+ Type 'all' to use all the nodes as source nodes for the hash slots.  
+ Type 'done' once you entered all the source nodes IDs.  
+Source node #1:03ccad2ba5dd1e062464bc7590400441fafb63f2 //被删除master的node-id  
+Source node #2:done   
+  
+Do you want to proceed with the proposed reshard plan (yes/no)? yes //取消slot后，reshard  
+
+新增master节点后，也进行了这一步操作，当时是分配，现在去掉。反着的。
+查看复制打印?
+# redis-trib.rb del-node 192.168.10.219:6378 '03ccad2ba5dd1e062464bc7590400441fafb63f2'  
+新的master节点被删除了，这样就回到了，就是这篇文章开头，还没有添加节点的状态
+
+
+详情请看 http://blog.51yip.com/nosql/1726.html/comment-page-1
+=======================================redis集群配置end==================================================
+
+
+=======================================redisSlave开机自启动配置==========================================
+编写脚本，vim /etc/init.d/redisSlave:
+# chkconfig: 2345 10 90
+# description: Start and Stop redis
+
+PATH=/usr/local/bin:/sbin:/usr/bin:/bin
+
+REDISPORT=7020 #实际环境而定
+EXEC=/usr/local/bin/redis-server #实际环境而定
+REDIS_CLI=/usr/local/bin/redis-cli #实际环境而定
+
+PIDFILE=/var/run/redis.pid
+CONF="/etc/redis/slave7020/redis.conf" #实际环境而定
+
+case "$1" in
+        start)
+                if [ -f $PIDFILE ]
+                then
+                        echo "$PIDFILE exists, process is already running or crashed."
+                else
+                        echo "Starting RedisSlave server..."
+                        $EXEC $CONF
+                fi
+                if [ "$?"="0" ]
+                then
+                        echo "Redis is running..."
+                fi
+                ;;
+        stop)
+                if [ ! -f $PIDFILE ]
+                then
+                        echo "$PIDFILE exists, process is not running."
+                else
+                        PID=$(cat $PIDFILE)
+                        echo "Stopping..."
+                        $REDIS_CLI -p $REDISPORT SHUTDOWN
+                        while [ -x $PIDFILE ]
+                        do
+                                echo "Waiting for RedisSlave to shutdown..."
+                                sleep 1
+                        done
+                        echo "RedisSlave stopped"
+                fi
+                ;;
+        restart|force-reload)
+                ${0} stop
+                ${0} start
+                ;;
+        *)
+                echo "Usage: /etc/init.d/redisSlave {start|stop|restart|force-reload}" >&2
+                exit 1
+esac
+
+=======================================redisSlave开机自启动配置end==========================================
