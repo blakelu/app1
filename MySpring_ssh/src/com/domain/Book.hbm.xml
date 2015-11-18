@@ -3,15 +3,34 @@
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class name="com.domain.Book" table="book" schema="dbo">
-        <id name="bookId">
-            <!-- 生成策略 -->
-            <generator class="native"/>
-        </id>
-        <property name="name"></property>
-        <property name="price"></property>
-    </class>
-    <query name="Book.findByName">
-        from Book where name like ?
-    </query>
+	<class name="com.domain.Book" table="book" schema="dbo">
+		<id name="bookId">
+			<!-- 生成策略 -->
+			<generator class="native" />
+		</id>
+		<property name="name"></property>
+		<property name="price"></property>
+		<property name="ISBN"></property>
+		<property name="author"></property>
+		<property name="publishDate"></property>
+		<property name="kind"></property>
+		<property name="info"></property>
+		<property name="src"></property>
+
+		<!-- 配置对一的关系 -->
+		<one-to-one name="repertory" class="com.domain.Repertory"
+			cascade="save-update,delete,delete-orphan"></one-to-one>
+
+		<!-- 一本书对应多个操作信息（一对多） name 就是对一属性名称 -->
+		<set name="borrows" cascade="save-update,delete,delete-orphan"
+			inverse="true">
+			<!-- key用来配当前表引用的外键的 -->
+			<key column="bookId"></key>
+			<!-- class是结合目标类型 -->
+			<one-to-many class="com.domain.Borrow" />
+		</set>
+	</class>
+	<query name="Book.findByName">
+		from Book where name like ?
+	</query>
 </hibernate-mapping>

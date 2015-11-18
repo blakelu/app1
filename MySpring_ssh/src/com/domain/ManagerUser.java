@@ -1,6 +1,9 @@
 package com.domain;
 
-//用户
+import java.util.HashSet;
+import java.util.Set;
+
+//管理员用户
 public class ManagerUser {
 	private Integer managerId;
 	private String username;
@@ -10,8 +13,10 @@ public class ManagerUser {
 	private String managerPho;//管理员手机号 必填
 	private String managerIdNo;//管理员身份证号 必填
 	private String managerNo;//管理员证件号 自动生成（无需填写） 格式 年月日+身份证后六位
-	private boolean isManager;//是否是普通管理员
-	private boolean isSuperManager;//是否是超级管理员 可以注销其他管理员功能（默认账号密码） 注册时自动生成false
+	private Boolean isManager;//是否拥有普通管理员
+	private Boolean isSuperManager;//是否是超级管理员 可以注销其他管理员功能（默认账号密码） 注册时自动生成false
+	//一个管理员具有多个操作信息
+	private Set<Borrow> borrows = new HashSet<Borrow>();
 	public Integer getManagerId() {
 		return managerId;
 	}
@@ -60,27 +65,26 @@ public class ManagerUser {
 	public void setManagerNo(String managerNo) {
 		this.managerNo = managerNo;
 	}
-	public boolean isManager() {
+	
+	public boolean getIsManager() {
 		return isManager;
 	}
-	public void setManager(boolean isManager) {
+	public void setIsManager(Boolean isManager) {
 		this.isManager = isManager;
 	}
-	public boolean isSuperManager() {
+	public boolean getIsSuperManager() {
 		return isSuperManager;
 	}
-	public void setSuperManager(boolean isSuperManager) {
+	public void setIsSuperManager(Boolean isSuperManager) {
 		this.isSuperManager = isSuperManager;
 	}
-	@Override
-	public String toString() {
-		return "MangerUser [managerId=" + managerId + ", username=" + username
-				+ ", password=" + password + ", managerName=" + managerName
-				+ ", managerAge=" + managerAge + ", managerPho=" + managerPho
-				+ ", managerIdNo=" + managerIdNo + ", managerNo=" + managerNo
-				+ ", isManager=" + isManager + ", isSuperManager="
-				+ isSuperManager + "]";
+	public Set<Borrow> getBorrows() {
+		return borrows;
 	}
+	public void setBorrows(Set<Borrow> borrows) {
+		this.borrows = borrows;
+	}
+
 	
 	
 }

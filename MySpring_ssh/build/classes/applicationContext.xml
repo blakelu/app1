@@ -52,6 +52,10 @@ http://www.springframework.org/schema/tx/spring-tx.xsd">
 		<property name="mappingResources">
 		    <list>
 		        <value>com/domain/Book.hbm.xml</value>
+		        <value>com/domain/Borrow.hbm.xml</value>
+		        <value>com/domain/ManagerUser.hbm.xml</value>
+		        <value>com/domain/OrdinaryUser.hbm.xml</value>
+		        <value>com/domain/Repertory.hbm.xml</value>
 		    </list>
 		</property>
 	</bean>

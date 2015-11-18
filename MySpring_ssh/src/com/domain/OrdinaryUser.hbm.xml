@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.domain.OrdinaryUser" table="ordinaryUser" schema="dbo">
+        <id name="ordinaryUserId">
+            <!-- 生成策略 -->
+            <generator class="native"/>
+        </id>
+        <property name="username" not-null="true"></property>
+        <property name="password" not-null="true"></property>
+        <property name="studentName" not-null="true"></property>
+        <property name="studentId" not-null="true"></property>
+        <property name="studentAge" not-null="true"></property>
+        <property name="balance" not-null="true"></property>
+        <property name="limit" not-null="true"></property>
+        
+		<!-- 一个普通读者对应多个操作信息（一对多）
+        name 就是对一属性名称 
+        cascade级联配置 (delete级联删除，delete-orphan孤儿删除)-->
+		<set name="borrows" cascade="save-update,delete,delete-orphan" inverse="true">
+			<!-- key用来配多方外键的 -->
+			<key column="studentId"></key>
+			<!-- class是结合目标类型 -->
+			<one-to-many class="com.domain.Borrow" />
+		</set>
+       
+    </class>
+
+</hibernate-mapping>

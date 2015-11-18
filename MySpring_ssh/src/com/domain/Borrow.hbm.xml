@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.domain.Borrow" table="borrow" schema="dbo">
+        <id name="borrowId">
+            <!-- 生成策略 -->
+            <generator class="native"/>
+        </id>
+      <!--   <property name="bookId" not-null="true"></property>
+        <property name="managerId" not-null="true"></property>
+        <property name="studentId" not-null="true"></property> -->
+        <property name="isReturn"></property>
+        <property name="lendDate"></property>
+        <property name="returnDate"></property>
+
+     
+        <!-- 一个操作信息对应一个管理员（多对一）
+             name 就是对一的属性名称
+             class 目标类型
+             column配置外键类名 -->
+        <many-to-one name="managerId" class="com.domain.ManagerUser" column="managerId"></many-to-one>
+		<!-- 一个操作信息对应一个普通用户（多对一）
+             name 就是对一的属性名称
+             class 目标类型
+             column配置外键类名 -->
+        <many-to-one name="studentId" class="com.domain.OrdinaryUser" column="studentId"></many-to-one>    
+    	<!-- 一个操作信息对应一本书（多对一）
+             name 就是对一的属性名称
+             class 目标类型
+             column配置外键类名 -->
+        <many-to-one name="bookId" class="com.domain.Book" column="bookId"></many-to-one>    
+
+    </class>
+    
+
+</hibernate-mapping>
