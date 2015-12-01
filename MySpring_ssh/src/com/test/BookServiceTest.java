@@ -2,6 +2,9 @@ package com.test;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
+
 
 
 import org.junit.Test;
@@ -33,4 +36,10 @@ public class BookServiceTest {
 		bookService.saveBook(book);
 	}
 
+	@Test
+	public void testAddBook() {
+		
+		
+		System.out.println(bookService.findBooks());
+	}
 }

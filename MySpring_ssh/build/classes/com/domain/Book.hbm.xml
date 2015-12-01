@@ -15,7 +15,7 @@
 		<property name="publishDate"></property>
 		<property name="kind"></property>
 		<property name="info"></property>
-		<property name="src"></property>
+		<property name="src" column="imageFileName" type="string" length="255"/>
 
 		<!-- 配置对一的关系 -->
 		<one-to-one name="repertory" class="com.domain.Repertory"

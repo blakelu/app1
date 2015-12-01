@@ -3,7 +3,7 @@
     "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
     "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class name="com.domain.ManagerUser" table="managerUser" schema="dbo">
+    <class name="com.domain.ManagerUser" table="managerUser" schema="dbo" >
         <id name="managerId">
             <!-- 生成策略 -->
             <generator class="native"/>
@@ -15,18 +15,27 @@
         <property name="managerPho"></property>
         <property name="managerIdNo"></property>
         <property name="managerNo"></property>
+        <property name="registDate"></property>
         <property name="isManager"></property>
         <property name="isSuperManager" ></property>
         
         <!-- 一个管理员对应多个操作信息（一对多）
         name 集合属性名称 -->
-        <set name="borrows" cascade="save-update,delete,delete-orphan" inverse="true">
+        <set name="borrows" cascade="save-update,delete,delete-orphan" inverse="true" lazy="false">
             <!-- key用来配外键的 -->
             <key column="managerId"></key>
             <!-- class是结合目标类型 -->
             <one-to-many class="com.domain.Borrow"/>
         </set>
+        
+        
     
     </class>
+    <query name="ManagerUser.verify">
+		from ManagerUser where username = ? and password = ?
+	</query>
+	<query name="ManagerUser.validateName">
+		from ManagerUser where username = ? 
+	</query>
 
 </hibernate-mapping>

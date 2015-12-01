@@ -50,7 +50,7 @@ public class BookDAOTest {
 
 	@Test
 	public void testFindByNamedQuery() {
-		System.out.println(bookDAO.findByNamedQuery("Book.findByName", "%java%"));
+		System.out.println(bookDAO.findByNamedQuery("Book.findByName", "%Œ“»•%"));
 	}
 
 	@Test

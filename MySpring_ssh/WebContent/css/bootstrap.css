@@ -4534,7 +4534,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   }
   .navbar-right {
     float: right !important;
-    margin-right: -15px;
+    margin-right: 0x;
   }
   .navbar-right ~ .navbar-right {
     margin-right: 0;
@@ -6310,6 +6310,7 @@ button.close {
             backface-visibility: hidden;
     -webkit-perspective: 1000px;
             perspective: 1000px;
+            text-align: center;
   }
   .carousel-inner > .item.next,
   .carousel-inner > .item.active.right {
@@ -6501,7 +6502,7 @@ button.close {
     padding-bottom: 30px;
   }
   .carousel-indicators {
-    bottom: 20px;
+    bottom: -5px;
   }
 }
 .clearfix:before,

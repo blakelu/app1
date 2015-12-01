@@ -4,11 +4,42 @@
 	"http://struts.apache.org/dtds/struts-2.3.dtd">
 
 <struts>
-    <package name="default" namespace="/" extends="struts-default">
-        <!-- 方式一 action upistruts2创建 -->
-<!-- 		<action name="book_*"
-		    class= "com.web.action.BookAction" method="{1}"/> -->
-		<!-- 方式二  action交给spring创建-->
-		<action name="book_*" class="bookAction" method="{1}" /> 
+	<constant name="struts.custom.i18n.resources" value="mess" />
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<constant name="struts.multipart.saveDir" value="/tmp"/>
+	
+	<package name="book" namespace="/" extends="struts-default">
+		<!-- 方式一 action upistruts2创建 -->
+		<!-- <action name="book_*" class= "com.web.action.BookAction" method="{1}"/> -->
+		<!-- 方式二 action交给spring创建 -->
+		<action name="book_*" class="bookAction" method="{1}">
+		<!--     <interceptor-ref name="fileUpload">
+			<param name="allowedTypes">image/bmp,image/png,image/gif,image/jpeg,image/jpg</param>
+			<param name="maximumSize">10240</param>
+			</interceptor-ref>
+			<interceptor-ref name="defaultStack" /> -->
+			<result name="success">/index.jsp</result>
+			<result name="input">/addbook.jsp</result>
+		</action>
+	</package>
+    <package name="managerUser" namespace="/" extends="struts-default,json-default">
+        
+		<action name="user_verify" class="managerUserAction" method="checkManagerUserLogin">
+		    <result name="success">/index.jsp</result>
+		    <result name="input">/login.jsp</result>
+		</action>
+		
+		<action name="user_regist" class="managerUserAction" method="regist">
+		    <result name="success">/index.jsp</result>
+		    <result name="input">/regist.jsp</result>
+		</action>
+		
+		<action name="user_exist" class="managerUserAction" method="userExists">
+		    <result  name="success" type="json">  
+   				 <param name="root">dataMap</param> 
+   				 <!-- 指定是否序列化空的属性 -->  
+   <!--              <param name="excludeNullProperties">true</param>   -->
+			</result> 
+		</action>
     </package>
 </struts>

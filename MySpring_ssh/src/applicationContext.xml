@@ -72,12 +72,22 @@ http://www.springframework.org/schema/tx/spring-tx.xsd">
 	    <!-- 注入SessionFactory对象，自动构造HibernateTemplate对象 -->
 	    <property name="sessionFactory" ref="sessionFactory"></property>
 	</bean>
+	<bean id = "managerUserDAO" class = "com.dao.ManagerUserDAO">
+	    <property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
 
 	<!-- 业务层 -->
 	<bean id ="bookService" class="com.service.BookService">
 	    <!-- 注入DAO -->
 	    <property name="bookDAO" ref="bookDAO"></property>
 	</bean>
+	<bean id ="managerUserService" class="com.service.ManagerUserService">
+	    <!-- 注入DAO -->
+	    <property name="managerUserDAO" ref="managerUserDAO"></property>
+	</bean>
+	
+	<!-- 开启注解事务 只对当前配置文件有效 -->
+  	<tx:annotation-driven transaction-manager="transactionManager"/>
 	
 	<!-- 事务管理 -->
 	<bean id="transactionManager" 
@@ -88,9 +98,9 @@ http://www.springframework.org/schema/tx/spring-tx.xsd">
 	
 	<tx:advice id="txAdvice" transaction-manager="transactionManager">
 	    <tx:attributes>
-	        <tx:method name="save*"/>
-	        <tx:method name="update*"/>
-	        <tx:method name="delete*"/>
+	        <tx:method name="save*" propagation="REQUIRED"/>
+	        <tx:method name="update*" propagation="REQUIRED"/>
+	        <tx:method name="delete*" propagation="REQUIRED"/>
 	        <tx:method name="find*" read-only="true"/>
 	        <tx:method name="query*" read-only="true"/>
 	    </tx:attributes>
@@ -105,5 +115,9 @@ http://www.springframework.org/schema/tx/spring-tx.xsd">
 	<bean id="bookAction" class="com.web.action.BookAction" scope="prototype">
 	    <!-- 注入Service -->
 	    <property name="bookService" ref="bookService"></property>
+	</bean>
+	<bean id="managerUserAction" class="com.web.action.ManagerUserAction" scope="prototype">
+	    <!-- 注入Service -->
+	    <property name="managerUserService" ref="managerUserService"></property>
 	</bean>
 </beans>

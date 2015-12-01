@@ -16,13 +16,27 @@
 	<!-- OpenSessionInViewFilter -->   
 	<filter>
 		<filter-name>OpenSessionInViewFilter</filter-name>
-		<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+	<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+	<init-param>
+		<param-name>sessionFactoryBeanName</param-name>
+		<param-value>sessionFactory</param-value>
+	</init-param>
+	<init-param>
+		<param-name>singleSession</param-name>
+		<param-value>true</param-value>
+	</init-param>
+	<init-param>
+		<param-name>flushMode</param-name>
+		<param-value>AUTO </param-value>
+	</init-param>
 	</filter>
 
 	<filter-mapping>
 		<filter-name>OpenSessionInViewFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>  
+	
+
 
 	<!-- struts2 核心控制器 -->
 	<filter>
@@ -30,10 +44,28 @@
 		<filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter</filter-class>
 	</filter>
 
-	<filter-mapping>
+<!-- 	<filter-mapping>
 		<filter-name>struts2</filter-name>
 		<url-pattern>/*</url-pattern>
+	</filter-mapping> -->
+	<filter-mapping>
+		<filter-name>struts2</filter-name>
+		<url-pattern>*.jsp</url-pattern>
 	</filter-mapping>
+	<filter-mapping>
+		<filter-name>struts2</filter-name>
+		<url-pattern>*.action</url-pattern>
+	</filter-mapping>
+
+		<!--验证码注入  -->
+	<servlet>
+		<servlet-name>img</servlet-name>
+		<servlet-class>com.servlet.AuthImg</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>img</servlet-name>
+		<url-pattern>/authImg</url-pattern>
+	</servlet-mapping>
 
 	<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
